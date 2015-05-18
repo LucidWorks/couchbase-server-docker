@@ -8,3 +8,5 @@ auto-save-list
 tramp
 .\#*
 generate/generator/generator
+.idea
+*.iml
