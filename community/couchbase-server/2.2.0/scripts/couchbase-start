@@ -1,6 +1,16 @@
 #!/bin/sh
 
-# Couchbase Server start script. 
+function untilsuccessful() {
+	until "$@"; do
+		echo Retrying: "$@"
+		sleep 2
+	done
+}
+
+# Couchbase Server start script.
+
+IP=`hostname --ip-address`
+#SEED=""
 
 set -e
 
@@ -24,7 +34,19 @@ then
 
     # Start couchbase
     echo "Starting Couchbase Server -- Web UI available at http://<ip>:8091"
-    exec gosu couchbase "$@"
+    gosu couchbase "$@" &
+    PID=$!
+
+    # Init Couchbase
+    echo "Make Couchbase ($IP) the first cluster node"
+    untilsuccessful couchbase-cli cluster-init -c $IP \
+      --cluster-init-username=$CB_USERNAME \
+      --cluster-init-password=$CB_PASSWORD \
+      --cluster-init-ramsize=$CB_NODE_RAMSIZE
+    untilsuccessful couchbase-cli bucket-create -c $IP \
+      -u $CB_USERNAME -p $CB_PASSWORD \
+      --bucket=default --bucket-ramsize=128
 fi
 
-exec "$@"
+# Wait indefinitely on Couchbase process
+wait $PID

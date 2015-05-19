@@ -17,10 +17,14 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 ENV CB_VERSION=3.0.3 \
     CB_RELEASE_URL=http://packages.couchbase.com/releases \
     CB_PACKAGE=couchbase-server-enterprise-3.0.3-centos6.x86_64.rpm \
+    CB_USERNAME=Administrator \
+    CB_PASSWORD=password \
+    CB_NODE_RAMSIZE=256 \
     PATH=$PATH:/opt/couchbase/bin:/opt/couchbase/bin/tools:/opt/couchbase/bin/install
 
 # Install couchbase
 RUN rpm --install $CB_RELEASE_URL/$CB_VERSION/$CB_PACKAGE
+RUN ln -s /opt/couchbase/bin/couchbase-cli /usr/local/bin/
 
 COPY scripts/couchbase-start /usr/local/bin/
 ENTRYPOINT ["couchbase-start"]
