@@ -47,5 +47,5 @@ then
       --bucket=default --bucket-ramsize=128
 fi
 
-# Wait indefinitely on Couchbase process
-wait $PID
+# Leave the container with open shell
+exec /bin/bash
