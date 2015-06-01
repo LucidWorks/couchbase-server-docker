@@ -48,4 +48,4 @@ then
 fi
 
 # Leave the container with open shell
-exec /bin/bash
+wait $PID
